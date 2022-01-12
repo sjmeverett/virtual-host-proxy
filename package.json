@@ -1,0 +1,36 @@
+{
+  "name": "virtual-host-proxy",
+  "version": "1.0.2",
+  "description": "A DNS and HTTP proxy to forward virtual hosts to ports on your local machine.",
+  "bin": {
+    "virtual-host-proxy": "virtual-host-proxy.js"
+  },
+  "scripts": {
+    "start": "node virtual-host-proxy.js",
+    "postversion": "git push --follow-tags"
+  },
+  "author": "Stewart Everett",
+  "license": "ISC",
+  "dependencies": {
+    "auto-launch": "^5.0.5",
+    "daemonize2": "^0.4.2",
+    "http-proxy": "^1.18.1",
+    "is-in-subnet": "^4.0.1",
+    "native-node-dns": "^0.7.6"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sjmeverett/virtual-host-proxy.git"
+  },
+  "keywords": [
+    "virtual",
+    "host",
+    "dns",
+    "proxy"
+  ],
+  "bugs": {
+    "url": "https://github.com/sjmeverett/virtual-host-proxy/issues"
+  },
+  "homepage": "https://github.com/sjmeverett/virtual-host-proxy#readme"
+}

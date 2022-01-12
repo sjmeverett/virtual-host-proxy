@@ -1,0 +1,14 @@
+node_modules/
+dist/
+build/
+*.log
+*.env
+.*rc
+.*rc.json
+config.*.json
+.DS_Store
+.webpack/
+test-results.xml
+test-results/
+*.old
+*.generated.*
