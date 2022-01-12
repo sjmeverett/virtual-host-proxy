@@ -1,6 +1,6 @@
 {
   "name": "virtual-host-proxy",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A DNS and HTTP proxy to forward virtual hosts to ports on your local machine.",
   "bin": {
     "virtual-host-proxy": "virtual-host-proxy.js"
