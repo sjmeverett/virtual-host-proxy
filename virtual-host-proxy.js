@@ -46,7 +46,9 @@ const autolauncher = new AutoLaunch({
 
 switch (process.argv[2]) {
   case 'init':
-    await ensureResolversConfig(rootDomain);
+    ensureResolversConfig(rootDomain).then(() => {
+      console.log('Initialized');
+    });
     break;
 
   case 'autolaunch':
