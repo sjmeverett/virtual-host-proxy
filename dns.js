@@ -10,7 +10,7 @@ function createDnsServer(configDir) {
     getAvailableDomains(configDir).then(
       async (domains) => {
         const [ourQuestions, theirQuestions] = partition(
-          request.questions,
+          request.question,
           (x) =>
             domains.find((domain) => x.name.endsWith(domain)) && x.type === 1,
         );
@@ -41,9 +41,11 @@ function createDnsServer(configDir) {
         });
 
         answers.push(
-          ...(await Promise.all(
-            theirQuestions.map((question) => proxyDns(question, authority)),
-          ).flat()),
+          ...(
+            await Promise.all(
+              theirQuestions.map((question) => proxyDns(question, authority)),
+            )
+          ).flat(),
         );
 
         response.answer = answers;

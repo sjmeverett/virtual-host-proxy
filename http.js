@@ -4,38 +4,62 @@ const { readFile, readdir } = require('fs/promises');
 const { join } = require('path');
 
 function createHttpProxyServer(configDir, domain) {
-  const proxy = createProxyServer({});
+  const proxy = createProxyServer({ ws: true });
 
-  const server = createServer((req, res) =>
-    (async () => {
-      const config = await getHostConfigIfProxyable(configDir, domain, req);
-
-      if (config) {
-        proxy.web(
-          req,
-          res,
-          { target: `http://127.0.0.1:${config.port}` },
-          (err) => {
-            if (err.code === 'ECONNREFUSED') {
-              sendHtml(
-                res,
-                `<h1>Service not started</h1>
+  const server = createServer((req, res) => {
+    getHostConfigIfProxyable(configDir, domain, req)
+      .then((config) => {
+        if (config) {
+          proxy.web(
+            req,
+            res,
+            { target: `http://127.0.0.1:${config.port}` },
+            (err) => {
+              if (err.code === 'ECONNREFUSED') {
+                sendHtml(
+                  res,
+                  `<h1>Service not started</h1>
                 <p>${config.domain} expects a listener on port ${config.port}</p>
                 <a href="http://localhost">Available services</a>`,
-                503,
-              );
-            } else {
-              sendHtml(res, `<h1>Error</h1><pre>${err.stack}</pre>`, 500);
+                  503,
+                );
+              } else {
+                sendHtml(res, `<h1>Error</h1><pre>${err.stack}</pre>`, 500);
+              }
+            },
+          );
+        } else {
+          return getServiceListPage(configDir).then((page) => {
+            sendHtml(res, page);
+          });
+        }
+      })
+      .catch((err) => {
+        sendHtml(res, `<h1>Error</h1><pre>${err.stack}</pre>`, 500);
+      });
+  });
+
+  server.on('upgrade', (req, socket, head) => {
+    getHostConfigIfProxyable(configDir, domain, req)
+      .then((config) => {
+        if (!config) return;
+
+        proxy.ws(
+          req,
+          socket,
+          head,
+          { target: `http://127.0.0.1:${config.port}` },
+          (err) => {
+            if (err) {
+              console.error(err);
             }
           },
         );
-      } else {
-        sendHtml(res, await getServiceListPage(configDir));
-      }
-    })().then(null, (err) => {
-      sendHtml(res, `<h1>Error</h1><pre>${err.stack}</pre>`, 500);
-    }),
-  );
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  });
 
   return server;
 }
